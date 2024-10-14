@@ -22,11 +22,14 @@ framework_files += [
     'devicedeps/cpu/cpu_device.cpp',
     'devicedeps/cpu/topology.cpp',
 ]
-
-default_c_flags += [
+device_flags = [
     '-DSANDSTONE_DEVICE_CPU',
 ]
 
+default_c_flags += [
+    device_flags
+]
+
 default_cpp_flags += [
-    '-DSANDSTONE_DEVICE_CPU',
+    device_flags
 ]

@@ -168,7 +168,10 @@ inline int cpu_info::cpu() const {
 std::string cpu_features_to_string(uint64_t f);
 
 extern "C" {
+#else
+#define thread_local _Thread_local
 #endif
+
 void dump_cpu_info(int verbosity);
 
 /// reads the value of the MSR, specified by msr, of CPU cpu.

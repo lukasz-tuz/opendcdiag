@@ -10,7 +10,8 @@ if device_type == ''
 endif
 
 sysdeps_dir = 'sysdeps' / target_machine.system()
-devicedeps_dir = 'devicedeps' / device_type / target_machine.system()
+devicedeps_dir = 'devicedeps' / device_type
+devicedeps_sys_dir = devicedeps_dir / target_machine.system()
 
 if target_machine.system() == 'cygwin'
     sysdeps_dir = 'sysdeps/windows'
@@ -24,6 +25,7 @@ framework_incdir = [
             '.',
             sysdeps_dir,
             devicedeps_dir,
+            devicedeps_sys_dir,
         ],
     ),
 ]
@@ -32,7 +34,7 @@ framework_files = files()
 
 # Run device-specific build steps early to ensure that any auto-generated
 # file is available before anything else.
-subdir('devicedeps' / device_type)
+subdir(devicedeps_dir)
 
 generated_builtin_test_list = []
 builtin_test_list_inputs = get_option('builtin_test_list')
@@ -169,7 +171,7 @@ if target_machine.system() != 'windows' and target_machine.system() != 'cygwin'
     subdir('devicedeps' / device_type / 'unix')
 endif
 subdir(sysdeps_dir)
-subdir(devicedeps_dir)
+subdir(devicedeps_sys_dir)
 
 framework_config_h = configure_file(
     input: 'sandstone_config.h.in',

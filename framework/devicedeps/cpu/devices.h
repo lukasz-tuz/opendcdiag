@@ -14,10 +14,10 @@ struct DeviceRange
 };
 
 /*
- * Called from sandstone_main(). The default weak implementation performs no
+ * Called from sandstone_main(). The default implementation performs no
  * checks, they just return. Feel free to implement a strong version elsewhere
  * if you prefer the framework to check for system or CPU criteria.
  */
-__attribute__((weak, noclone, noinline)) void device_specific_init() {}
+static __attribute__((unused, noinline)) void device_specific_init() {}
 
 #endif // INC_DEVICES_H

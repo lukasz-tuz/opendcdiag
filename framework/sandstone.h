@@ -41,7 +41,6 @@ extern "C" {
 #include <stdalign.h>
 #include <stdatomic.h>
 #include <stdbool.h>
-#define thread_local _Thread_local
 #define noexcept __attribute__((__nothrow__))
 #endif
 
