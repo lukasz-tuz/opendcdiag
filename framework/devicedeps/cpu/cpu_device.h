@@ -7,12 +7,13 @@
 #define INC_CPU_DEVICE_H
 
 #ifdef SANDSTONE_DEVICE_CPU
-
-#include "devicedeps/cpu/cpu_features.h"
+#pragma once
 
 #ifdef __cplusplus
 #include <string>
 #endif
+#include "devicedeps/devices.h"
+#include "devicedeps/cpu/cpu_features.h"
 #include <string.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -119,14 +120,6 @@
 /// that all the K registers have been modified by the assembly code.
 #define KMASKCLOBBEREDLIST "k0","k1","k2","k3","k4","k5","k6","k7"
 
-extern uint64_t cpu_features;
-/// used to determine whether one or more CPU features are available at runtime.  f is a bitmask
-/// of cpu features as defined in the auto-generated cpu_features.h file.  For example, a test
-/// may call cpu_has_feature(cpu_feature_avx512f) to determine whether AVX-512 is available.
-/// Normally, cpuid detection is handle automatically by the framework via test's minimum_cpu field.
-/// This macro is provided in case tests need more fine grained control.
-#define cpu_has_feature(f)      ((_compilerCpuFeatures & (f)) == (f) || (cpu_features & (f)) == (f))
-
 /// used as follows: if instruction cache, only cache_instruction is valid; if
 /// data, only data is valid; if unified, both are set to the same value. In all
 /// the cases the value is the cache size in bytes.  A field is valid if it
@@ -156,10 +149,6 @@ struct cpu_info {
 #endif
 };
 
-#ifdef __cplusplus
-using device_info = struct cpu_info;
-#endif
-
 /// cpu_info is an array of cpu_info structures.  Each element of the array
 /// contains information about a logical CPU that will be used to
 /// execute a test's test_run function.  The size of this array is
@@ -167,15 +156,36 @@ using device_info = struct cpu_info;
 extern struct cpu_info *cpu_info;
 
 #ifdef __cplusplus
+using device_info = struct cpu_info;
 inline int cpu_info::cpu() const {
     return this - ::cpu_info;
 }
+
+class CpuDevice : DeviceBase {
+public:
+    static uint64_t features;
+
+    /// used to determine whether one or more CPU features are available at runtime.  f is a bitmask
+    /// of cpu features as defined in the auto-generated cpu_features.h file.  For example, a test
+    /// may call cpu_has_feature(cpu_feature_avx512f) to determine whether AVX-512 is available.
+    /// Normally, cpuid detection is handle automatically by the framework via test's minimum_cpu field.
+    /// This macro is provided in case tests need more fine grained control.
+    static bool has_feature(uint64_t f);
+
+    static std::string features_to_string(uint64_t f);
+
+    CpuDevice(int index) : DeviceBase(index) {}
+    ~CpuDevice() {}
+};
+
+static const uint64_t minimum_cpu_features = _compilerCpuFeatures;
+
 std::string cpu_features_to_string(uint64_t f);
 
 extern "C" {
 #else
 #define thread_local _Thread_local
-#endif
+#endif // __cplusplus
 
 void dump_cpu_info(int verbosity);
 

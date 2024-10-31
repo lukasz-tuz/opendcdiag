@@ -6,33 +6,9 @@
 #ifndef INC_DEVICES_H
 #define INC_DEVICES_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct {
-    // a contiguous range
-    int starting_device;
-    int device_count;
-} DeviceRange;
-
-/// @brief Generic device discovery and initialization function. Need to be
-/// implemented by the device-specific code. The function is called from the
-/// framework's main() function.
-extern void device_init();
-
-extern int num_devices();
-
-/// Called from sandstone_main(). The default implementation performs no
-/// checks, they just return. Feel free to implement a strong version elsewhere
-/// if you prefer the framework to check for additional system or device criteria.
-static __attribute__((unused, noinline)) void device_specific_init() {}
-
-void restrict_devices(DeviceRange range);
+#include <stdbool.h>
 
 #ifdef __cplusplus
-}
-
 // Base device type
 class DeviceBase {
 public:
@@ -40,7 +16,56 @@ public:
     virtual ~DeviceBase() {}
     int index;
 };
+
+extern "C"
+{
 #endif
+    /// C-style device API functions that need to be implemented by 
+    /// the device-specific code.
 
+    /// @brief Represents a contiguous range of devices.
+    typedef struct {
+        int starting_device;
+        int device_count;
+    } DeviceRange;
 
+    /// @brief Returns the number of physical instances of a device available for use
+    /// by tests (e.g., number of CPU packages, number of compute accelerator
+    /// devices, etc.).
+    extern int num_devices() __attribute__((pure));
+
+    /// Returns the number of logical compute execution units (e.g., CPU cores)
+    /// available to a test. Normally, this value is equal to the total number of
+    /// execution units in the device under test but the value can be lower
+    /// if --cpuset option is used, the tests specifies a value for test.max_threads
+    /// or the OS/other software restricts the number of visible devices.
+    extern int num_units() __attribute__((pure));
+
+    /// @brief Set of feature flags associated with a device, where each bit in the variable
+    /// indicates support for specific instructions, availability of additional
+    /// IP blocks, etc.
+    /// Code shall also provide means for semantically decoding that value, like
+    /// structure with definition of each bit.
+    extern unsigned long device_features;
+
+    /// @brief  Returns true if the device supports the specified features.
+    /// @param f Bitmask of features to check.
+    extern bool device_has_feature(unsigned long f);
+
+    /// @brief Generic device discovery and initialization function. Need to be
+    /// implemented by the device-specific code. The function is called from the
+    /// framework's main() function.
+    extern void device_init();
+
+    /// @brief Called from sandstone_main(). The default implementation performs no
+    /// checks, they just return. Feel free to implement a strong version elsewhere
+    /// if you prefer the framework to check for additional system or device criteria.
+    extern __attribute__((unused, noinline)) void device_specific_init();
+
+    /// @brief Restricts the devices available to a test.
+    void restrict_devices(DeviceRange range);
+
+#ifdef __cplusplus
+}
+#endif
 #endif // INC_DEVICES_H

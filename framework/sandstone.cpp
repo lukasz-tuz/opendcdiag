@@ -56,7 +56,6 @@
 
 #include "forkfd.h"
 
-#include "devicedeps/devices.h"
 #ifdef SANDSTONE_DEVICE_CPU
 #   include "devicedeps/cpu/cpu_features.h"
 #   include "devicedeps/cpu/cpu_device.h"
@@ -2130,13 +2129,13 @@ static TestResult run_one_test_once(const struct test *test)
 #ifndef SANDSTONE_DEVICE_CPU
     uint64_t cpu_features = 0;
 #endif
-    if (uint64_t missing = (test->minimum_cpu | test->compiler_minimum_cpu) & ~cpu_features) {
+    if (uint64_t missing = (test->minimum_cpu | test->compiler_minimum_cpu) & ~CpuDevice::features) {
         init_per_thread_data();
 
 #ifdef SANDSTONE_DEVICE_CPU
         // for brevity, don't report the bits that the framework itself needs
         missing &= ~_compilerCpuFeatures;
-        log_skip(CpuNotSupportedSkipCategory, "test requires %s\n", cpu_features_to_string(missing).c_str());
+        log_skip(CpuNotSupportedSkipCategory, "test requires %s\n", CpuDevice::features_to_string(missing).c_str());
         (void) missing;
 #endif
         children.results.emplace_back(ChildExitStatus{ TestResult::Skipped });
@@ -2469,7 +2468,7 @@ static void list_tests(int opt)
                     // don't report the FW minimum CPU features
                     uint64_t cpuf = test->compiler_minimum_cpu & ~_compilerCpuFeatures;
                     cpuf |= test->minimum_cpu;
-                    printf("%-20s %s\n", test->id, cpu_features_to_string(cpuf).c_str());
+                    printf("%-20s %s\n", test->id, CpuDevice::features_to_string(cpuf).c_str());
 #endif
                 } else {
                     puts(test->id);
@@ -3055,9 +3054,6 @@ skip_wait:
     }
     return true;
 }
-#ifdef SANDSTONE_DEVICE_CPU
-extern constexpr const uint64_t minimum_cpu_features = _compilerCpuFeatures;
-#endif
 int main(int argc, char **argv)
 {
     // initialize the main application

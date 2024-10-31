@@ -560,9 +560,9 @@ static void cause_sigill()
 
     __m128i one = _mm_set1_epi32(-1);
 #ifndef __clang__
-    if (cpu_has_feature(cpu_feature_avx)) {
+    if (CpuDevice::has_feature(cpu_feature_avx)) {
         // init the AVX state (using inline assembly to avoid vzeroupper)
-        if (cpu_has_feature(cpu_feature_avx512f)) {
+        if (CpuDevice::has_feature(cpu_feature_avx512f)) {
             // %gN: make zmm
             asm ("vpternlogd $0xff, %g0, %g0, %g0" : "=x" (one));
         } else {
@@ -571,7 +571,7 @@ static void cause_sigill()
         }
     }
 #endif
-    if (cpu_has_feature(cpu_feature_amx_tile)) {
+    if (CpuDevice::has_feature(cpu_feature_amx_tile)) {
         // init the AMX state
         alignas(64) static struct amx_tileconfig cfg = {
             .palette = 1,

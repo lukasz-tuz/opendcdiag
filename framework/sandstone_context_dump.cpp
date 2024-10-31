@@ -8,7 +8,7 @@
 
 #ifdef __x86_64__
 #include "amx_common.h"
-#include "devicedeps/cpu/cpu_features.h"
+#include "devicedeps/cpu/cpu_device.h"
 #include "fp_vectors/Floats.h"
 
 #include <algorithm>
@@ -498,7 +498,7 @@ void dump_xsave(std::string &f, const void *xsave_area, size_t xsave_size, int x
 
         // some Atoms have XSAVE but not AVX, but until there's interesting
         // state in them, the check for AVX suffices
-        if (cpu_has_feature(cpu_feature_avx))
+        if (CpuDevice::has_feature(cpu_feature_avx))
             xgetbv0 = do_xgetbv();
 
         if (xsave_bv & ~xgetbv0)

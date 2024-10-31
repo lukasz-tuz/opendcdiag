@@ -35,7 +35,6 @@
 #include <sandstone_iovec.h>
 #include <sandstone_utils.h>
 
-#include "devicedeps/devices.h"
 #ifdef SANDSTONE_DEVICE_CPU
 #include "devicedeps/cpu/cpu_device.h"
 #include "devicedeps/cpu/topology.h"

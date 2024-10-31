@@ -78,7 +78,13 @@ struct linux_cpu_info
 };
 }
 
-struct cpu_info *cpu_info = nullptr;
+/// Declared in cpu_device.h
+int num_cpus() {
+    return sApp->thread_count;
+}
+int num_packages() {
+    return CpuTopology::topology().packages.size();
+}
 
 static CpuTopology &cached_topology()
 {
@@ -95,19 +101,6 @@ LogicalProcessorSet init_cpus()
     mallopt(M_ARENA_MAX, sApp->thread_count * 2);
 #endif
     return result;
-}
-
-int num_cpus()
-{
-    return sApp->thread_count;
-}
-
-int num_devices() {
-    return num_cpus();
-}
-
-int num_packages() {
-    return CpuTopology::topology().packages.size();
 }
 
 #ifdef __linux__
@@ -1115,10 +1108,6 @@ void restrict_topology(DeviceRange range)
     if (old_cpu_info != cpu_info || old_thread_count != sApp->thread_count ||
             topo.packages.size() == 0)
         topo = build_topology();
-}
-
-void restrict_devices(DeviceRange range) {
-    return restrict_topology(range);
 }
 
 static char character_for_mask(uint32_t mask)

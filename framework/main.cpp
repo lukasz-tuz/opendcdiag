@@ -22,6 +22,7 @@
 #include "sandstone.h"
 #ifdef SANDSTONE_DEVICE_CPU
 #include "devicedeps/cpu/cpuid_internal.h"
+#include "devicedeps/cpu/cpu_device.h"
 extern const uint64_t minimum_cpu_features;
 
 #if defined(AT_EXECPATH) && !defined(AT_EXECFN)
@@ -55,7 +56,7 @@ static unsigned long getauxval(int type)
     }
     return 0;
 }
-#  endif
+#  endif // !defined(__GLIBC_PREREQ) || !__GLIBC_PREREQ(2, 16)
 
 static void fallback_exec(char **argv)
 {
@@ -115,10 +116,10 @@ static void premain(int argc, char **argv, char **envp)
     (void) envp;
 
     // initialize CPU detection
-    cpu_features = detect_cpu();
-    if (minimum_cpu_features & ~cpu_features)
+    CpuDevice::features = detect_cpu();
+    if (minimum_cpu_features & ~CpuDevice::features)
         fallback_exec(argv);
-    check_missing_features(cpu_features, minimum_cpu_features);
+    check_missing_features(CpuDevice::features, minimum_cpu_features);
 }
 }
 #endif // SANDSTONE_DEVICE_CPU

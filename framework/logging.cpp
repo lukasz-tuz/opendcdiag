@@ -1792,7 +1792,7 @@ void KeyValuePairLogger::print(int tc)
     logging_printf(LOG_LEVEL_VERBOSE(1), "%s_pass_count = %d\n", test->id, pc);
 #ifdef SANDSTONE_DEVICVE_CPU
     logging_printf(LOG_LEVEL_VERBOSE(2), "%s_virtualized = %s\n", test->id,
-                   cpu_has_feature(cpu_feature_hypervisor) ? "yes" : "no");
+                   CpuDevice::has_feature(cpu_feature_hypervisor) ? "yes" : "no");
 #endif
     if (should_print_fail_info()) {
         logging_printf(LOG_LEVEL_VERBOSE(1), "%s_fail_percent = %.1f\n", test->id,
@@ -2067,7 +2067,7 @@ void TapFormatLogger::maybe_print_yaml_marker(int fd)
     writeln(fd, yamlseparator,
             "\n  info: {version: ", program_version,
             ", timestamp: ", iso8601_time_now(Iso8601Format::WithoutMs),
-            cpu_has_feature(cpu_feature_hypervisor) ? ", virtualized: true" : nothing,
+            CpuDevice::has_feature(cpu_feature_hypervisor) ? ", virtualized: true" : nothing,
             "}");
 #endif
     if (std::string fail_info = fail_info_details(); !fail_info.empty())

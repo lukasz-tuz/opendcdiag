@@ -300,7 +300,7 @@ template struct EngineWrapper<std::minstd_rand>;
 // -- AES engine (generates numbers by running AES over a state) --
 static bool haveAes()
 {
-    return cpu_has_feature(cpu_feature_aes);
+    return CpuDevice::has_feature(cpu_feature_aes);
 }
 
 #pragma GCC push_options
