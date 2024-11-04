@@ -88,24 +88,27 @@ to describe them - at a very high level. Device specific code shall implement -
 at minimum - following functions.
 
 ```c
-/// Returns the number of physical instances of a device available for use
-/// by tests (e.g., number of CPU packages, number of compute accelerator
-/// devices, etc.).
-int num_devices() __attribute__((pure));
+  /// @brief Returns the number of physical instances of a device available for use
+  /// by tests (e.g., number of CPU packages, number of compute accelerator
+  /// devices, etc.).
+  extern int num_devices() __attribute__((pure));
 
-/// Returns the number of logical compute execution units (e.g., CPU cores)
-/// available to a test. Normally, this value is equal to the total number of
-/// execution units in the device under test but the value can be lower
-/// if --cpuset option is used, the tests specifies a value for test.max_threads
-/// or the OS/other software restricts the number of visible devices.
-int num_units() __attribute__((pure));
+  /// Returns the number of logical compute execution units (e.g., CPU cores)
+  /// available to a test. Normally, this value is equal to the total number of
+  /// execution units in the device under test but the value can be lower
+  /// if --cpuset option is used, the tests specifies a value for test.max_threads
+  /// or the OS/other software restricts the number of visible devices.
+  extern int num_units() __attribute__((pure));
 
-/// Set of feature flags associated with a device, where each bit in the variable
-/// indicates support for specific instructions, availability of additional
-/// IP blocks, etc.
-/// Code shall also provide means for semantically decoding that value, like
-/// structure with definition of each bit.
-extern uint64_t device_features;
+  /// @brief Generic device discovery and initialization function. Need to be
+  /// implemented by the device-specific code. The function is called from the
+  /// framework's main() function.
+  extern void device_init();
+
+  /// @brief Called from sandstone_main(). The default implementation performs no
+  /// checks, they just return. Feel free to implement a strong version elsewhere
+  /// if you prefer the framework to check for additional system or device criteria.
+  extern __attribute__((unused, noinline)) void device_specific_init();
 ```
 
 Device initialization code shall be called from `main()` early, before command

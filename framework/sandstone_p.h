@@ -386,6 +386,7 @@ struct SandstoneApplication : public test_the_test_data<SandstoneConfig::Debug>
     bool ignore_os_errors = false;
     bool force_test_time = false;
     bool service_background_scan = false;
+    DeviceBase *device = nullptr;
 #ifdef SANDSTONE_DEVICE_CPU
     /// TODO: move to CPU specific code
     bool vary_frequency_mode = false;

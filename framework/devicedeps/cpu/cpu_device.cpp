@@ -87,11 +87,18 @@ bool device_has_feature(unsigned long f) {
 /// CPU devices are directly initialized in the framework's main() function.
 /// Once CPU initialization is untied from shmem initialization, this function
 /// will be called from the framework's main() function.
-__attribute__((unused)) void device_init() {
+DeviceBase* device_init() {
+    return new CpuDevice();
+}
+
+void device_specific_init() {}
+void device_specific_init(int arg) {
     return;
 }
-__attribute__((unused, noinline)) void device_specific_init() {}
-
+template<typename... Args>
+void device_specific_init(Args... args) {
+    device_specific_init(args...);
+}
 void restrict_devices(DeviceRange range) {
     restrict_topology(range);
 }

@@ -8,6 +8,8 @@
 
 #include <stdbool.h>
 
+#define SANDSTONE_NO_DEVICE (-1)
+
 #ifdef __cplusplus
 // Base device type
 class DeviceBase {
@@ -16,6 +18,17 @@ public:
     virtual ~DeviceBase() {}
     int index;
 };
+
+/// @brief Generic device discovery and initialization function. Need to be
+/// implemented by the device-specific code. The function is called from the
+/// framework's main() function.
+extern DeviceBase* device_init();
+
+/// @brief Called from sandstone_main(). The default implementation performs no
+/// checks, they just return. Feel free to implement a strong version elsewhere
+/// if you prefer the framework to check for additional system or device criteria.
+extern template<typename... Args>
+void device_specific_init(Args... args);
 
 extern "C"
 {
@@ -40,27 +53,6 @@ extern "C"
     /// if --cpuset option is used, the tests specifies a value for test.max_threads
     /// or the OS/other software restricts the number of visible devices.
     extern int num_units() __attribute__((pure));
-
-    /// @brief Set of feature flags associated with a device, where each bit in the variable
-    /// indicates support for specific instructions, availability of additional
-    /// IP blocks, etc.
-    /// Code shall also provide means for semantically decoding that value, like
-    /// structure with definition of each bit.
-    extern unsigned long device_features;
-
-    /// @brief  Returns true if the device supports the specified features.
-    /// @param f Bitmask of features to check.
-    extern bool device_has_feature(unsigned long f);
-
-    /// @brief Generic device discovery and initialization function. Need to be
-    /// implemented by the device-specific code. The function is called from the
-    /// framework's main() function.
-    extern void device_init();
-
-    /// @brief Called from sandstone_main(). The default implementation performs no
-    /// checks, they just return. Feel free to implement a strong version elsewhere
-    /// if you prefer the framework to check for additional system or device criteria.
-    extern __attribute__((unused, noinline)) void device_specific_init();
 
     /// @brief Restricts the devices available to a test.
     void restrict_devices(DeviceRange range);

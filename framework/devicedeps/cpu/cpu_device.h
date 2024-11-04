@@ -7,7 +7,6 @@
 #define INC_CPU_DEVICE_H
 
 #ifdef SANDSTONE_DEVICE_CPU
-#pragma once
 
 #ifdef __cplusplus
 #include <string>
@@ -161,26 +160,25 @@ inline int cpu_info::cpu() const {
     return this - ::cpu_info;
 }
 
-class CpuDevice : DeviceBase {
+class CpuDevice : public DeviceBase {
 public:
     static uint64_t features;
-
-    /// used to determine whether one or more CPU features are available at runtime.  f is a bitmask
-    /// of cpu features as defined in the auto-generated cpu_features.h file.  For example, a test
-    /// may call cpu_has_feature(cpu_feature_avx512f) to determine whether AVX-512 is available.
-    /// Normally, cpuid detection is handle automatically by the framework via test's minimum_cpu field.
-    /// This macro is provided in case tests need more fine grained control.
+    /// used to determine whether one or more CPU features are available at
+    /// runtime.  f is a bitmask of cpu features as defined in the
+    /// auto-generated cpu_features.h file.  For example, a test may call
+    /// cpu_has_feature(cpu_feature_avx512f) to determine whether AVX-512 is
+    /// available. Normally, cpuid detection is handle automatically by the
+    /// framework via test's minimum_cpu field. This macro is provided in case
+    /// tests need more fine grained control.
     static bool has_feature(uint64_t f);
 
     static std::string features_to_string(uint64_t f);
 
+    CpuDevice() : DeviceBase(SANDSTONE_NO_DEVICE) {}
     CpuDevice(int index) : DeviceBase(index) {}
     ~CpuDevice() {}
 };
-
 static const uint64_t minimum_cpu_features = _compilerCpuFeatures;
-
-std::string cpu_features_to_string(uint64_t f);
 
 extern "C" {
 #else

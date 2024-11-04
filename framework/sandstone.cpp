@@ -56,6 +56,7 @@
 
 #include "forkfd.h"
 
+#include "devicedeps/devices.h"
 #ifdef SANDSTONE_DEVICE_CPU
 #   include "devicedeps/cpu/cpu_features.h"
 #   include "devicedeps/cpu/cpu_device.h"
@@ -3189,9 +3190,11 @@ int main(int argc, char **argv)
 
 #ifdef SANDSTONE_DEVICE_CPU
     {
+        sApp->device = device_init();
         LogicalProcessorSet enabled_cpus = init_cpus();
         init_shmem();
         init_topology(std::move(enabled_cpus));
+       auto frequency_manager = FrequencyManager();
     }
 #endif
 
@@ -3632,7 +3635,7 @@ int main(int argc, char **argv)
 
     print_application_banner();
     logging_init_global();
-    device_specific_init();
+    device_specific_init(3);
     random_init_global(seed);
     background_scan_init();
 
