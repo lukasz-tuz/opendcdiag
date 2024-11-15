@@ -13,25 +13,20 @@
 #include <string>
 #include <inttypes.h>
 
-/// Device specific APIs for CPU devices.
-/// Declared in cpu_device.h and used by CPU specific code because it has
-/// semantic meaning for CPU devices.
+uint64_t cpu_features = 0;
 
-struct cpu_info *cpu_info = nullptr;
-
-#ifdef __llvm__
-thread_local int thread_num __attribute__((tls_model("initial-exec")));
+/// Windows cross compilation doesn't handle __attribute__((weak)) well.
+#ifdef _WIN32
+__attribute__((noclone, noinline)) void device_specific_init()
+{
+}
 #else
-thread_local int thread_num = 0;
+__attribute__((weak, noclone, noinline)) void device_specific_init()
+{
+}
 #endif
 
-uint64_t CpuDevice::features = _compilerCpuFeatures;
-
-bool CpuDevice::has_feature(uint64_t f) {
-    return ((_compilerCpuFeatures & (f)) == (f) || (CpuDevice::features & (f)) == (f));
-}
-
-std::string CpuDevice::features_to_string(uint64_t f)
+std::string cpu_features_to_string(uint64_t f)
 {
     std::string result;
     const char *comma = "";
