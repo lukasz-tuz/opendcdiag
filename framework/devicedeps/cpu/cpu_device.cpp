@@ -91,13 +91,16 @@ DeviceBase* device_init() {
     return new CpuDevice();
 }
 
-void device_specific_init() {}
-void device_specific_init(int arg) {
+// Explicit specializations
+template <>
+void device_specific_init<>() {}
+
+template <>
+void device_specific_init<int>(int arg) {
     return;
 }
 template<typename... Args>
 void device_specific_init(Args... args) {
-    device_specific_init(args...);
 }
 void restrict_devices(DeviceRange range) {
     restrict_topology(range);

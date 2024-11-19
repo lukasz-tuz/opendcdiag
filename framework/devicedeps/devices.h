@@ -27,13 +27,13 @@ extern DeviceBase* device_init();
 /// @brief Called from sandstone_main(). The default implementation performs no
 /// checks, they just return. Feel free to implement a strong version elsewhere
 /// if you prefer the framework to check for additional system or device criteria.
-extern template<typename... Args>
-void device_specific_init(Args... args);
+template<typename... Args>
+extern void device_specific_init(Args... args);
 
 extern "C"
 {
 #endif
-    /// C-style device API functions that need to be implemented by 
+    /// C-style device API functions that need to be implemented by
     /// the device-specific code.
 
     /// @brief Represents a contiguous range of devices.

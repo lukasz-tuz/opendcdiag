@@ -3635,7 +3635,7 @@ int main(int argc, char **argv)
 
     print_application_banner();
     logging_init_global();
-    device_specific_init(3);
+    device_specific_init();
     random_init_global(seed);
     background_scan_init();
 
