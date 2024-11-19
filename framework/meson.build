@@ -4,6 +4,12 @@
 framework_config = configuration_data()
 framework_config.set10('SANDSTONE_STATIC', false) # sysdeps may override
 
+device_type = get_option('device_type')
+if device_type == ''
+    device_type = 'cpu'
+endif
+device_flags = []
+
 sysdeps_dir = 'sysdeps' / target_machine.system()
 devicedeps_dir = 'devicedeps' / device_type
 devicedeps_sys_dir = devicedeps_dir / target_machine.system()

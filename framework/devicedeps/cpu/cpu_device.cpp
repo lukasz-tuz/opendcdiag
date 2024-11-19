@@ -27,10 +27,36 @@ thread_local int thread_num = 0;
 
 uint64_t CpuDevice::features = _compilerCpuFeatures;
 
+/// CPU devices are directly initialized in the framework's main() function.
+/// Once CPU initialization is untied from shmem initialization, this function
+/// will be called from the framework's main() function.
+DeviceBase* device_init() {
+    return new CpuDevice();
+}
+template<typename... Args>
+void device_specific_init(Args... args) {
+}
+template<>
+void device_specific_init() {
+}
+template <>
+void device_specific_init<int>(int arg) {
+}
+
+/// Implementation of device.h API for the framework.
+int num_devices() {
+    return num_cpus();
+}
+int num_units() {
+    return num_cpus();
+}
+void restrict_devices(DeviceRange range) {
+    return restrict_topology(range);
+}
+
 bool CpuDevice::has_feature(uint64_t f) {
     return ((_compilerCpuFeatures & (f)) == (f) || (CpuDevice::features & (f)) == (f));
 }
-
 std::string CpuDevice::features_to_string(uint64_t f)
 {
     std::string result;
@@ -72,38 +98,6 @@ void dump_cpu_info(int verbosity)
             printf("\t%016" PRIx64, cpu_info[i].ppin);
         puts("");
     }
-}
-
-/// Implementation of device.h API for the framework.
-int num_devices() {
-    return num_cpus();
-}
-int num_units() {
-    return num_cpus();
-}
-bool device_has_feature(unsigned long f) {
-    return CpuDevice::has_feature(f);
-}
-/// CPU devices are directly initialized in the framework's main() function.
-/// Once CPU initialization is untied from shmem initialization, this function
-/// will be called from the framework's main() function.
-DeviceBase* device_init() {
-    return new CpuDevice();
-}
-
-// Explicit specializations
-template <>
-void device_specific_init<>() {}
-
-template <>
-void device_specific_init<int>(int arg) {
-    return;
-}
-template<typename... Args>
-void device_specific_init(Args... args) {
-}
-void restrict_devices(DeviceRange range) {
-    restrict_topology(range);
 }
 
 #endif
